@@ -21,3 +21,4 @@ class Article(models.Model):
     author = models.ForeignKey(JournalUser, db_column="user", on_delete=models.CASCADE)
     for_subscribers = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    changed_at = models.DateTimeField(auto_now_add=True)

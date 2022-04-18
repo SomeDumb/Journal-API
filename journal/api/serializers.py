@@ -55,4 +55,4 @@ class ArticleSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.email',read_only=True)
     class Meta:
         model = Article
-        fields = ('topic', 'author', 'created_at', 'text','for_subscribers')
+        fields = ('id', 'topic', 'author', 'created_at', 'changed_at','text','for_subscribers')
