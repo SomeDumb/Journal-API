@@ -1,7 +1,6 @@
 *.pyc
 __pycache__/*
 __init__.py
-migrations/*
 .env
 .DS_Store
 runtime.txt
