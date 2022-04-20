@@ -35,7 +35,8 @@ class ArticleList(ListAPIView):
     ordering_fields = ['created_at', 'author']
     serializer_class = ArticleSerializer
     def get_queryset(self):
-        if self.request.user.is_authenticated:
+        
+        if self.request.user.groups.filter(name='subscriber').exists():
             articles=Article.objects.all()
         else:
             articles=Article.objects.filter(for_subscribers=False)
@@ -55,7 +56,7 @@ class ArticleDetailView(APIView):
         self.check_object_permissions(self.request, article)
         serializer = ArticleSerializer(article, data=request.data)
         
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exceptions=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -69,7 +70,7 @@ class ArticleDetailView(APIView):
     def get(self, request, pk, format=None):
         article = get_object_or_404(Article, pk=pk)
         serializer = ArticleSerializer(article)
-        if not request.user.has_perm('api.can_view_article') and article.for_subscribers:
+        if not request.user.groups.filter(name='subscriber').exists() and article.for_subscribers:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         return Response(serializer.data)
@@ -83,5 +84,5 @@ class NewArticleView(CreateAPIView):
     serializer_class = ArticleSerializer
     
     def perform_create(self, serializer):
-        author = get_object_or_404(JournalUser, id=self.request.user.id)
+        author = self.request.user
         return serializer.save(author=author)
